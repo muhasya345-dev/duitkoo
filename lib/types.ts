@@ -76,3 +76,18 @@ export interface ProjectionMonth {
   net: number
   cumulative: number
 }
+
+export interface SavingsEntry {
+  id: number
+  date: string
+  amount: number
+  note: string | null
+}
+
+// Titik grafik gabungan proyeksi + aktual.
+export interface ChartPoint {
+  label: string
+  month: string
+  proyeksi: number
+  aktual: number | null
+}

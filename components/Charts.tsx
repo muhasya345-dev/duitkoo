@@ -3,11 +3,13 @@
 import { useEffect, useState } from 'react'
 import {
   Area,
-  AreaChart,
   Bar,
   BarChart,
   CartesianGrid,
   Cell,
+  ComposedChart,
+  Legend,
+  Line,
   Pie,
   PieChart,
   ResponsiveContainer,
@@ -16,7 +18,7 @@ import {
   YAxis,
 } from 'recharts'
 import { rupiah } from '@/lib/format'
-import type { ProjectionMonth } from '@/lib/types'
+import type { ChartPoint } from '@/lib/types'
 
 // Hindari render chart saat prerender build (recharts butuh DOM).
 function useMounted() {
@@ -27,15 +29,15 @@ function useMounted() {
 
 const juta = (v: number) => `${Math.round(v / 1_000_000)}jt`
 
-export function ProjectionChart({ data }: { data: ProjectionMonth[] }) {
+export function ProjectionChart({ data, hasActual }: { data: ChartPoint[]; hasActual?: boolean }) {
   const mounted = useMounted()
-  if (!mounted) return <div className="h-56" />
+  if (!mounted) return <div className="h-60" />
   return (
-    <ResponsiveContainer width="100%" height={224}>
-      <AreaChart data={data} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>
+    <ResponsiveContainer width="100%" height={240}>
+      <ComposedChart data={data} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>
         <defs>
           <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#0e9f6e" stopOpacity={0.35} />
+            <stop offset="0%" stopColor="#0e9f6e" stopOpacity={0.3} />
             <stop offset="100%" stopColor="#0e9f6e" stopOpacity={0.02} />
           </linearGradient>
         </defs>
@@ -43,12 +45,24 @@ export function ProjectionChart({ data }: { data: ProjectionMonth[] }) {
         <XAxis dataKey="label" tick={{ fontSize: 10, fill: '#94a3b8' }} tickFormatter={(v) => v.split(' ')[0]} />
         <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} tickFormatter={juta} width={36} />
         <Tooltip
-          formatter={(v: any) => rupiah(Number(v))}
+          formatter={(v: any) => (v == null ? '—' : rupiah(Number(v)))}
           labelStyle={{ fontSize: 12 }}
           contentStyle={{ borderRadius: 12, fontSize: 12, border: '1px solid #e2e8f0' }}
         />
-        <Area type="monotone" dataKey="cumulative" name="Akumulasi" stroke="#0e9f6e" strokeWidth={2} fill="url(#grad)" />
-      </AreaChart>
+        {hasActual && <Legend wrapperStyle={{ fontSize: 11 }} iconType="plainline" />}
+        <Area type="monotone" dataKey="proyeksi" name="Proyeksi" stroke="#0e9f6e" strokeWidth={2} fill="url(#grad)" />
+        {hasActual && (
+          <Line
+            type="monotone"
+            dataKey="aktual"
+            name="Aktual"
+            stroke="#d97706"
+            strokeWidth={2.6}
+            dot={{ r: 3, fill: '#d97706' }}
+            connectNulls
+          />
+        )}
+      </ComposedChart>
     </ResponsiveContainer>
   )
 }

@@ -11,6 +11,7 @@ import income from './routes/income'
 import gold from './routes/gold'
 import budget from './routes/budget'
 import reports from './routes/reports'
+import savings from './routes/savings'
 import exportRoute from './routes/export'
 
 // Satu app Hono untuk seluruh API, di-mount sebagai Pages Functions (/api/*).
@@ -35,6 +36,7 @@ app.route('/income', income)
 app.route('/gold', gold)
 app.route('/budget', budget)
 app.route('/reports', reports)
+app.route('/savings', savings)
 app.route('/export', exportRoute)
 
 // Penanganan error & not-found seragam (JSON).
