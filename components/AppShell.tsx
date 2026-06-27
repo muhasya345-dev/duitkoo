@@ -4,13 +4,13 @@ import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
-  LayoutDashboard,
-  Wallet,
-  ScanLine,
   BarChart3,
-  Settings,
-  LogOut,
+  LayoutDashboard,
   Loader2,
+  LogOut,
+  ScanLine,
+  Settings,
+  Wallet,
 } from 'lucide-react'
 import { api } from '@/lib/api'
 
@@ -22,9 +22,36 @@ const NAV = [
   { href: '/pengaturan', label: 'Atur', icon: Settings },
 ]
 
+function useActive() {
+  const pathname = usePathname()
+  return (href: string) => {
+    if (href === '/') return pathname === '/'
+    if (href === '/pengeluaran') return pathname === '/pengeluaran'
+    return pathname.startsWith(href)
+  }
+}
+
+function Logo({ small = false }: { small?: boolean }) {
+  return (
+    <div className="flex items-center gap-2.5">
+      <div
+        className={`grid place-items-center rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 font-extrabold text-white shadow-glow ${
+          small ? 'h-9 w-9 text-base' : 'h-11 w-11 text-lg'
+        }`}
+      >
+        D
+      </div>
+      <div className="leading-tight">
+        <p className={`font-extrabold tracking-tight ${small ? 'text-sm' : 'text-base'}`}>Duitkoo</p>
+        <p className="text-[11px] text-ink-400">Manajemen Keuangan</p>
+      </div>
+    </div>
+  )
+}
+
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter()
-  const pathname = usePathname()
+  const isActive = useActive()
   const [user, setUser] = useState<{ name: string } | null>(null)
   const [checking, setChecking] = useState(true)
 
@@ -43,51 +70,91 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   if (checking) {
     return (
-      <div className="flex min-h-screen items-center justify-center text-slate-400">
-        <Loader2 className="h-6 w-6 animate-spin" />
+      <div className="flex min-h-screen items-center justify-center text-brand-500">
+        <Loader2 className="h-7 w-7 animate-spin" />
       </div>
     )
   }
 
+  const firstName = user?.name?.split(' ').slice(0, 2).join(' ') ?? 'Pengguna'
+
   return (
-    <div className="mx-auto min-h-screen max-w-3xl pb-24">
-      {/* Header */}
-      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white/90 px-4 py-3 backdrop-blur">
-        <div className="flex items-center gap-2">
-          <div className="grid h-9 w-9 place-items-center rounded-xl bg-brand-600 text-base font-extrabold text-white">
-            D
-          </div>
-          <div>
-            <p className="text-sm font-bold leading-tight">Duitkoo</p>
-            <p className="text-[11px] leading-tight text-slate-400">
-              {user?.name?.split(' ').slice(0, 2).join(' ') ?? 'Keuangan'}
-            </p>
-          </div>
+    <div className="min-h-screen">
+      {/* ===== Sidebar (desktop) ===== */}
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-ink-100 bg-white/70 px-4 py-6 backdrop-blur-xl lg:flex">
+        <div className="px-2">
+          <Logo />
         </div>
-        <button onClick={logout} className="btn-secondary !px-3 !py-2" title="Keluar">
-          <LogOut className="h-4 w-4" />
-        </button>
-      </header>
-
-      <main className="px-4 py-4">{children}</main>
-
-      {/* Bottom nav (mobile-first) */}
-      <nav className="fixed inset-x-0 bottom-0 z-10 mx-auto max-w-3xl border-t border-slate-100 bg-white/95 backdrop-blur">
-        <div className="grid grid-cols-5">
+        <nav className="mt-8 flex-1 space-y-1">
           {NAV.map((item) => {
-            const active =
-              item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)
+            const active = isActive(item.href)
             const Icon = item.icon
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-col items-center gap-0.5 py-2.5 text-[11px] font-medium transition ${
-                  active ? 'text-brand-600' : 'text-slate-400'
+                className={`group flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-semibold transition-all ${
+                  active
+                    ? 'bg-brand-600 text-white shadow-glow'
+                    : 'text-ink-500 hover:bg-ink-100 hover:text-ink-800'
                 }`}
               >
-                <Icon className={`h-5 w-5 ${active ? 'stroke-[2.4]' : ''}`} />
+                <Icon className={`h-5 w-5 transition-transform group-hover:scale-110 ${active ? '' : 'text-ink-400'}`} />
                 {item.label}
+              </Link>
+            )
+          })}
+        </nav>
+        <div className="mt-4 rounded-2xl bg-ink-50 p-3">
+          <div className="flex items-center gap-2.5">
+            <div className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-sm font-bold text-white">
+              {firstName.charAt(0)}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xs font-semibold text-ink-700">{firstName}</p>
+              <p className="text-[10px] text-ink-400">Akun pribadi</p>
+            </div>
+            <button onClick={logout} className="rounded-xl p-2 text-ink-400 transition hover:bg-white hover:text-red-500" title="Keluar">
+              <LogOut className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {/* ===== Header (mobile) ===== */}
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-ink-100 bg-white/80 px-4 py-3 backdrop-blur-xl lg:hidden">
+        <Logo small />
+        <button onClick={logout} className="rounded-xl bg-ink-100 p-2.5 text-ink-500 transition active:scale-95" title="Keluar">
+          <LogOut className="h-4 w-4" />
+        </button>
+      </header>
+
+      {/* ===== Konten ===== */}
+      <main className="lg:pl-64">
+        <div className="mx-auto max-w-3xl px-4 pb-28 pt-4 lg:px-8 lg:pb-12 lg:pt-10">{children}</div>
+      </main>
+
+      {/* ===== Bottom nav (mobile) ===== */}
+      <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-ink-100 bg-white/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl lg:hidden">
+        <div className="mx-auto grid max-w-3xl grid-cols-5">
+          {NAV.map((item) => {
+            const active = isActive(item.href)
+            const Icon = item.icon
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="relative flex flex-col items-center gap-1 py-2.5 text-[10px] font-semibold"
+              >
+                {active && <span className="absolute top-0 h-1 w-8 rounded-full bg-brand-500" />}
+                <span
+                  className={`grid h-9 w-9 place-items-center rounded-2xl transition-all ${
+                    active ? 'bg-brand-50 text-brand-600' : 'text-ink-400'
+                  }`}
+                >
+                  <Icon className={`h-[18px] w-[18px] ${active ? 'stroke-[2.4]' : ''}`} />
+                </span>
+                <span className={active ? 'text-brand-600' : 'text-ink-400'}>{item.label}</span>
               </Link>
             )
           })}

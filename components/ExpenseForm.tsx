@@ -5,6 +5,7 @@ import { Loader2 } from 'lucide-react'
 import { api } from '@/lib/api'
 import { parseRupiah, ribuan, todayISO } from '@/lib/format'
 import type { Category, Expense } from '@/lib/types'
+import Select from '@/components/Select'
 
 export interface ExpenseFormValues {
   id?: number
@@ -99,18 +100,14 @@ export default function ExpenseForm({
 
       <div>
         <label className="label">Kategori</label>
-        <select
-          className="input"
-          value={categoryId ?? ''}
-          onChange={(e) => setCategoryId(e.target.value ? Number(e.target.value) : null)}
-        >
-          <option value="">— Tanpa kategori —</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
+        <Select
+          value={categoryId}
+          onChange={(v) => setCategoryId(v != null ? Number(v) : null)}
+          allowEmpty
+          emptyLabel="Tanpa kategori"
+          placeholder="Pilih kategori"
+          options={categories.map((c) => ({ value: c.id, label: c.name, color: c.color }))}
+        />
       </div>
 
       <div>
@@ -125,13 +122,11 @@ export default function ExpenseForm({
 
       <div>
         <label className="label">Metode Bayar</label>
-        <select className="input" value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
-          {PAYMENT_METHODS.map((m) => (
-            <option key={m} value={m}>
-              {m}
-            </option>
-          ))}
-        </select>
+        <Select
+          value={paymentMethod}
+          onChange={(v) => setPaymentMethod(String(v))}
+          options={PAYMENT_METHODS.map((m) => ({ value: m, label: m }))}
+        />
       </div>
 
       <div>

@@ -114,7 +114,7 @@ function Dashboard({ d }: { d: DashData }) {
       <div className="card">
         <div className="mb-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="grid h-10 w-10 place-items-center rounded-xl bg-amber-50 text-amber-500">
+            <div className="grid h-10 w-10 place-items-center rounded-xl bg-gold-50 text-gold-500">
               <Gem className="h-5 w-5" />
             </div>
             <div>
@@ -126,10 +126,10 @@ function Dashboard({ d }: { d: DashData }) {
           </div>
           <div className="text-right">
             <p className="text-xs text-slate-400">Nilai terkumpul</p>
-            <p className="text-sm font-bold text-amber-600">{rupiah(nilaiEmas)}</p>
+            <p className="text-sm font-bold text-gold-600">{rupiah(nilaiEmas)}</p>
           </div>
         </div>
-        <ProgressBar value={d.totalGrams} max={maharTargetGram} color="bg-amber-400" />
+        <ProgressBar value={d.totalGrams} max={maharTargetGram} gradient="from-gold-300 to-gold-500" />
         <p className="mt-2 text-xs text-slate-400">
           Cicilan: {num('mahar_cicil_per_bulan_gram')} gram/bulan ·{' '}
           {maharTargetGram > 0 ? Math.round((d.totalGrams / maharTargetGram) * 100) : 0}% tercapai
@@ -166,7 +166,7 @@ function Dashboard({ d }: { d: DashData }) {
             )
           })}
         </div>
-        <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
+        <p className="rounded-lg bg-gold-50 px-3 py-2 text-xs text-gold-700">
           Total pengeluaran bertanda “pernikahan”: <b>{rupiah(d.weddingSpent)}</b>
         </p>
       </div>

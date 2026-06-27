@@ -2,42 +2,121 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-}
-
-html {
-  -webkit-tap-highlight-color: transparent;
-}
-
-body {
-  @apply bg-slate-50 text-slate-800 antialiased;
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-ink-50 text-ink-900 antialiased;
+    font-feature-settings: 'ss01', 'cv01';
+    /* lapisan latar lembut, tidak flat/mainstream */
+    background-image:
+      radial-gradient(60rem 60rem at 110% -10%, rgba(16, 185, 129, 0.06), transparent 60%),
+      radial-gradient(50rem 50rem at -10% 0%, rgba(245, 158, 11, 0.05), transparent 55%);
+    background-attachment: fixed;
+  }
+  /* Scrollbar tipis & modern */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd3df transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: #cbd3df;
+    border-radius: 9999px;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: #aab4c4;
+  }
+  ::selection {
+    background: theme('colors.brand.200');
+    color: theme('colors.brand.900');
+  }
 }
 
 @layer components {
   .card {
-    @apply rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100;
+    @apply rounded-3xl bg-white/90 p-4 shadow-card ring-1 ring-ink-100/70 backdrop-blur-sm;
   }
+  .card-flat {
+    @apply rounded-2xl bg-white p-4 ring-1 ring-ink-100;
+  }
+
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
+    @apply inline-flex select-none items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50;
   }
   .btn-primary {
-    @apply btn bg-brand-600 text-white hover:bg-brand-700;
+    @apply btn bg-brand-600 text-white shadow-glow hover:bg-brand-700 hover:shadow-[0_10px_34px_-6px_rgba(14,159,110,0.45)];
+  }
+  .btn-gold {
+    @apply btn bg-gold-500 text-white shadow-glow-gold hover:bg-gold-600;
   }
   .btn-secondary {
-    @apply btn bg-slate-100 text-slate-700 hover:bg-slate-200;
+    @apply btn bg-ink-100 text-ink-700 hover:bg-ink-200;
+  }
+  .btn-ghost {
+    @apply btn bg-transparent text-ink-500 hover:bg-ink-100;
   }
   .btn-danger {
     @apply btn bg-red-50 text-red-600 hover:bg-red-100;
   }
+
   .input {
-    @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100;
+    @apply w-full rounded-2xl border border-ink-200 bg-white px-3.5 py-2.5 text-sm text-ink-900 outline-none transition placeholder:text-ink-400 focus:border-brand-400 focus:ring-4 focus:ring-brand-100;
   }
   .label {
-    @apply mb-1.5 block text-sm font-medium text-slate-600;
+    @apply mb-1.5 block text-xs font-semibold uppercase tracking-wide text-ink-400;
   }
   .badge {
-    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold;
+  }
+
+  /* Heading section dengan garis aksen */
+  .section-title {
+    @apply flex items-center gap-2 text-[15px] font-bold text-ink-800;
+  }
+
+  /* Stagger animasi anak (dipakai untuk list yang muncul) */
+  .stagger > * {
+    animation: slide-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .stagger > *:nth-child(1) { animation-delay: 0.02s; }
+  .stagger > *:nth-child(2) { animation-delay: 0.06s; }
+  .stagger > *:nth-child(3) { animation-delay: 0.10s; }
+  .stagger > *:nth-child(4) { animation-delay: 0.14s; }
+  .stagger > *:nth-child(5) { animation-delay: 0.18s; }
+  .stagger > *:nth-child(6) { animation-delay: 0.22s; }
+  .stagger > *:nth-child(7) { animation-delay: 0.26s; }
+  .stagger > *:nth-child(8) { animation-delay: 0.30s; }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  /* Garis gradien tipis */
+  .ring-gradient {
+    background:
+      linear-gradient(white, white) padding-box,
+      linear-gradient(135deg, theme('colors.brand.400'), theme('colors.gold.300')) border-box;
+    border: 1.5px solid transparent;
+  }
+  /* Efek shimmer untuk skeleton */
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  .shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+    animation: shimmer 1.5s infinite;
   }
 }
 
@@ -46,4 +125,9 @@ input[type='number']::-webkit-inner-spin-button,
 input[type='number']::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+/* Perbaiki tampilan ikon date input */
+input[type='date']::-webkit-calendar-picker-indicator {
+  opacity: 0.5;
+  cursor: pointer;
 }

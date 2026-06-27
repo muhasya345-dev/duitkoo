@@ -44,7 +44,7 @@ export default function LaporanPage() {
             </div>
             <div className="card">
               <p className="text-xs text-slate-400">Untuk Pernikahan</p>
-              <p className="mt-1 text-lg font-extrabold text-amber-600">{rupiah(data.totals.wedding_total)}</p>
+              <p className="mt-1 text-lg font-extrabold text-gold-600">{rupiah(data.totals.wedding_total)}</p>
             </div>
           </div>
 

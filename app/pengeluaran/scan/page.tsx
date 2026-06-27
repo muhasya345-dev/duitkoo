@@ -167,7 +167,7 @@ export default function ScanPage() {
                   <p className="mt-1 text-lg font-extrabold text-slate-800">{rupiah(extraction.total || 0)}</p>
                 </>
               ) : (
-                <p className="text-amber-600">
+                <p className="text-gold-600">
                   Teks struk kurang jelas terbaca. Silakan periksa & isi data di bawah.
                 </p>
               )}

@@ -5,6 +5,7 @@ import { Pencil, Plus, Receipt, Search, Trash2 } from 'lucide-react'
 import AppShell from '@/components/AppShell'
 import Modal, { ConfirmDialog } from '@/components/Modal'
 import ExpenseForm, { expenseToForm } from '@/components/ExpenseForm'
+import Select from '@/components/Select'
 import { PageLoader } from '@/components/ui'
 import { api } from '@/lib/api'
 import { rupiah, tanggal } from '@/lib/format'
@@ -101,18 +102,22 @@ export default function PengeluaranPage() {
           <input type="date" className="input" value={to} onChange={(e) => setTo(e.target.value)} />
         </div>
         <div className="grid grid-cols-2 gap-2">
-          <select className="input" value={catFilter} onChange={(e) => setCatFilter(e.target.value)}>
-            <option value="">Semua kategori</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-          <label className="flex items-center justify-center gap-2 rounded-xl bg-slate-50 text-sm font-medium text-slate-600">
+          <Select
+            value={catFilter || null}
+            onChange={(v) => setCatFilter(v == null ? '' : String(v))}
+            allowEmpty
+            emptyLabel="Semua kategori"
+            placeholder="Semua kategori"
+            options={categories.map((c) => ({ value: c.id, label: c.name, color: c.color }))}
+          />
+          <label
+            className={`flex cursor-pointer items-center justify-center gap-2 rounded-2xl text-sm font-semibold transition ${
+              weddingOnly ? 'bg-gold-100 text-gold-700 ring-1 ring-gold-200' : 'bg-ink-50 text-ink-500'
+            }`}
+          >
             <input
               type="checkbox"
-              className="h-4 w-4 accent-amber-500"
+              className="h-4 w-4 accent-gold-500"
               checked={weddingOnly}
               onChange={(e) => setWeddingOnly(e.target.checked)}
             />
@@ -122,9 +127,9 @@ export default function PengeluaranPage() {
       </div>
 
       {/* Total bar */}
-      <div className="mt-3 flex items-center justify-between rounded-xl bg-brand-50 px-4 py-3">
-        <span className="text-sm font-medium text-brand-700">{expenses.length} transaksi</span>
-        <span className="text-base font-extrabold text-brand-700">{rupiah(total)}</span>
+      <div className="mt-3 flex items-center justify-between rounded-2xl bg-gradient-to-r from-brand-600 to-brand-700 px-4 py-3.5 text-white shadow-glow">
+        <span className="text-sm font-medium text-white/80">{expenses.length} transaksi</span>
+        <span className="text-lg font-extrabold tracking-tight">{rupiah(total)}</span>
       </div>
 
       {/* List */}
@@ -133,9 +138,9 @@ export default function PengeluaranPage() {
       ) : expenses.length === 0 ? (
         <p className="py-16 text-center text-sm text-slate-400">Belum ada pengeluaran.</p>
       ) : (
-        <div className="mt-3 space-y-2">
+        <div className="stagger mt-3 space-y-2">
           {expenses.map((e) => (
-            <div key={e.id} className="card flex items-center gap-3 !p-3">
+            <div key={e.id} className="card flex items-center gap-3 !p-3 transition hover:shadow-soft">
               {e.receipt_id ? (
                 <img
                   src={`/api/receipts/${e.receipt_id}/image`}
@@ -156,7 +161,7 @@ export default function PengeluaranPage() {
                     {e.description || e.category_name || 'Pengeluaran'}
                   </p>
                   {!!e.is_wedding && (
-                    <span className="badge bg-amber-100 text-amber-700">nikah</span>
+                    <span className="badge bg-gold-100 text-gold-700">nikah</span>
                   )}
                 </div>
                 <p className="text-[11px] text-slate-400">

@@ -35,8 +35,8 @@ export function ProjectionChart({ data }: { data: ProjectionMonth[] }) {
       <AreaChart data={data} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>
         <defs>
           <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#207240" stopOpacity={0.35} />
-            <stop offset="100%" stopColor="#207240" stopOpacity={0.02} />
+            <stop offset="0%" stopColor="#0e9f6e" stopOpacity={0.35} />
+            <stop offset="100%" stopColor="#0e9f6e" stopOpacity={0.02} />
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
@@ -47,7 +47,7 @@ export function ProjectionChart({ data }: { data: ProjectionMonth[] }) {
           labelStyle={{ fontSize: 12 }}
           contentStyle={{ borderRadius: 12, fontSize: 12, border: '1px solid #e2e8f0' }}
         />
-        <Area type="monotone" dataKey="cumulative" name="Akumulasi" stroke="#207240" strokeWidth={2} fill="url(#grad)" />
+        <Area type="monotone" dataKey="cumulative" name="Akumulasi" stroke="#0e9f6e" strokeWidth={2} fill="url(#grad)" />
       </AreaChart>
     </ResponsiveContainer>
   )
@@ -59,7 +59,7 @@ export function CategoryPie({
   data: { category_name: string; total: number; color?: string | null }[]
 }) {
   const mounted = useMounted()
-  const palette = ['#207240', '#52a96e', '#f59e0b', '#3b82f6', '#ec4899', '#8b5cf6', '#ef4444', '#6b7280']
+  const palette = ['#0e9f6e', '#34d399', '#f59e0b', '#3b82f6', '#ec4899', '#8b5cf6', '#ef4444', '#6b7280']
   if (!mounted) return <div className="h-56" />
   if (!data.length) return <p className="py-10 text-center text-sm text-slate-400">Belum ada data</p>
   return (
@@ -87,7 +87,7 @@ export function MonthlyBar({ data }: { data: { month: string; total: number }[] 
         <XAxis dataKey="month" tick={{ fontSize: 10, fill: '#94a3b8' }} />
         <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} tickFormatter={juta} width={36} />
         <Tooltip formatter={(v: any) => rupiah(Number(v))} contentStyle={{ borderRadius: 12, fontSize: 12 }} />
-        <Bar dataKey="total" name="Total" fill="#207240" radius={[6, 6, 0, 0]} />
+        <Bar dataKey="total" name="Total" fill="#0e9f6e" radius={[6, 6, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   )

@@ -41,7 +41,7 @@ export default function LoginPage() {
           <div>
             <label className="label">NIP</label>
             <div className="relative">
-              <User className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-slate-400" />
+              <User className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-ink-400" />
               <input
                 className="input pl-9"
                 value={nip}
@@ -56,7 +56,7 @@ export default function LoginPage() {
           <div>
             <label className="label">Password</label>
             <div className="relative">
-              <Lock className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-slate-400" />
+              <Lock className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-ink-400" />
               <input
                 className="input pl-9"
                 type="password"

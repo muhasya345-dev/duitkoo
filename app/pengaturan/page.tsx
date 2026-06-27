@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Check, Loader2, Plus, Trash2 } from 'lucide-react'
 import AppShell from '@/components/AppShell'
+import Select from '@/components/Select'
 import { PageLoader } from '@/components/ui'
 import { api } from '@/lib/api'
 import { parseRupiah, ribuan } from '@/lib/format'
@@ -157,11 +158,15 @@ function IncomeSection() {
             onChange={(e) => update(i, { amount: parseRupiah(e.target.value) })}
           />
           <div className="grid grid-cols-2 gap-2">
-            <select className="input" value={it.frequency} onChange={(e) => update(i, { frequency: e.target.value })}>
-              <option value="bulanan">Bulanan</option>
-              <option value="periodik">Periodik</option>
-              <option value="tahunan">Tahunan</option>
-            </select>
+            <Select
+              value={it.frequency}
+              onChange={(v) => update(i, { frequency: String(v) })}
+              options={[
+                { value: 'bulanan', label: 'Bulanan' },
+                { value: 'periodik', label: 'Periodik' },
+                { value: 'tahunan', label: 'Tahunan' },
+              ]}
+            />
             <input
               className="input"
               placeholder="tiap bulan / Jul / Des,Jun"
@@ -197,7 +202,7 @@ function GoldSection() {
 
   return (
     <div className="space-y-3">
-      <p className="rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-700">
+      <p className="rounded-xl bg-gold-50 px-3 py-2 text-sm text-gold-700">
         Total terkumpul: <b>{total.toFixed(2)} gram</b>
       </p>
       {list.map((it, i) => (
@@ -284,17 +289,11 @@ function BudgetSection() {
               />
             </div>
           </div>
-          <select
-            className="input"
+          <Select
             value={it.priority || 'Sedang'}
-            onChange={(e) => update(i, { priority: e.target.value })}
-          >
-            {['Wajib', 'Penting', 'Tinggi', 'Sedang', 'Rendah'].map((p) => (
-              <option key={p} value={p}>
-                {p}
-              </option>
-            ))}
-          </select>
+            onChange={(v) => update(i, { priority: String(v) })}
+            options={['Wajib', 'Penting', 'Tinggi', 'Sedang', 'Rendah'].map((p) => ({ value: p, label: p }))}
+          />
         </div>
       ))}
       <button onClick={add} className="btn-secondary w-full">
