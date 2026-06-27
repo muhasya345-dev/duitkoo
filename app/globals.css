@@ -72,8 +72,11 @@
 }
 
 @layer components {
+  /* Catatan: JANGAN pakai backdrop-blur di sini — itu membuat stacking context
+     per-kartu sehingga dropdown (Select/MonthPicker) di dalam kartu tertimpa
+     kartu berikutnya. */
   .card {
-    @apply rounded-3xl bg-surface/90 p-4 shadow-card ring-1 ring-ink-100/70 backdrop-blur-sm;
+    @apply rounded-3xl bg-surface p-4 shadow-card ring-1 ring-ink-100/70;
   }
   .card-flat {
     @apply rounded-2xl bg-surface p-4 ring-1 ring-ink-100;
