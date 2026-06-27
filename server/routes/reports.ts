@@ -31,7 +31,7 @@ reports.get('/summary', async (c) => {
 
   const byCategory = await c.env.DB.prepare(
     `SELECT c.id AS category_id, COALESCE(c.name,'Tanpa Kategori') AS category_name,
-            c.color AS color, COALESCE(SUM(e.amount),0) AS total, COUNT(*) AS count
+            c.color AS color, c.icon AS icon, COALESCE(SUM(e.amount),0) AS total, COUNT(*) AS count
      FROM expenses e LEFT JOIN categories c ON c.id = e.category_id
      ${whereSql}
      GROUP BY e.category_id

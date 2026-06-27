@@ -14,6 +14,7 @@ export interface Expense {
   category_id: number | null
   category_name?: string | null
   category_color?: string | null
+  category_icon?: string | null
   description: string | null
   amount: number
   payment_method: string | null
@@ -55,6 +56,16 @@ export interface ReceiptExtraction {
   currency: string
   items: { name: string; qty: number; price: number }[]
   category_guess: string | null
+}
+
+export interface GoldPrice {
+  spot_per_gram: number
+  retail_per_gram: number
+  premium_pct: number
+  mahar_target_gram: number
+  mahar_estimate: number
+  updated_at: number
+  source: string
 }
 
 export interface ProjectionMonth {

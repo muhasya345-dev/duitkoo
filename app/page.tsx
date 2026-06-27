@@ -1,19 +1,19 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Gem, Target, TrendingUp, Wallet } from 'lucide-react'
+import { Coins, Target, TrendingUp, Wallet } from 'lucide-react'
 import AppShell from '@/components/AppShell'
 import { ProjectionChart } from '@/components/Charts'
 import { PageLoader, ProgressBar, SectionTitle, Stat } from '@/components/ui'
 import { api } from '@/lib/api'
-import { rupiah } from '@/lib/format'
-import type { BudgetItem, IncomeSource, ProjectionMonth } from '@/lib/types'
+import { rupiah, tanggal } from '@/lib/format'
+import type { BudgetItem, GoldPrice, IncomeSource, ProjectionMonth } from '@/lib/types'
 
 interface DashData {
   settings: Record<string, string>
   projection: ProjectionMonth[]
   proyeksiAkhir: number
-  totalGrams: number
+  gold: GoldPrice
   budget: BudgetItem[]
   weddingSpent: number
   income: IncomeSource[]
@@ -27,7 +27,7 @@ export default function DashboardPage() {
     Promise.all([
       api.get<{ settings: Record<string, string> }>('/plan'),
       api.get<{ projection: ProjectionMonth[]; proyeksi_akhir: number }>('/reports/projection'),
-      api.get<{ total_grams: number }>('/gold'),
+      api.get<GoldPrice>('/gold/price'),
       api.get<{ budget: BudgetItem[]; total_wedding_spent: number }>('/budget'),
       api.get<{ income: IncomeSource[] }>('/income'),
     ])
@@ -36,7 +36,7 @@ export default function DashboardPage() {
           settings: plan.settings,
           projection: proj.projection,
           proyeksiAkhir: proj.proyeksi_akhir,
-          totalGrams: gold.total_grams,
+          gold,
           budget: bud.budget,
           weddingSpent: bud.total_wedding_spent,
           income: inc.income,
@@ -58,11 +58,6 @@ function Dashboard({ d }: { d: DashData }) {
   const targetMin = num('target_min')
   const targetMax = num('target_max')
   const saldoAwal = num('saldo_awal')
-
-  // Mahar emas
-  const maharTargetGram = num('mahar_target_gram')
-  const hargaEmas = num('harga_emas_per_gram')
-  const nilaiEmas = d.totalGrams * hargaEmas
 
   // Anggaran pernikahan
   const totalEstimasi = d.budget.reduce((a, b) => a + (b.estimated || 0), 0)
@@ -109,30 +104,43 @@ function Dashboard({ d }: { d: DashData }) {
         <ProjectionChart data={d.projection} />
       </div>
 
-      {/* Mahar emas */}
-      <SectionTitle>Tracker Mahar Emas</SectionTitle>
-      <div className="card">
-        <div className="mb-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="grid h-10 w-10 place-items-center rounded-xl bg-gold-50 text-gold-500">
-              <Gem className="h-5 w-5" />
+      {/* Patokan harga emas (pasar, live) */}
+      <SectionTitle>Patokan Harga Emas</SectionTitle>
+      <div className="card overflow-hidden bg-gradient-to-br from-gold-50 to-white">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-gold-300 to-gold-500 text-white shadow-glow-gold">
+              <Coins className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-sm font-semibold">
-                {d.totalGrams.toFixed(1)} / {maharTargetGram} gram
+              <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+                Emas murni / gram
               </p>
-              <p className="text-xs text-slate-400">Harga: {rupiah(hargaEmas)}/gram</p>
+              <p className="text-2xl font-extrabold tracking-tight text-ink-900">
+                {rupiah(d.gold.spot_per_gram)}
+              </p>
             </div>
           </div>
-          <div className="text-right">
-            <p className="text-xs text-slate-400">Nilai terkumpul</p>
-            <p className="text-sm font-bold text-gold-600">{rupiah(nilaiEmas)}</p>
+          <span className="badge bg-gold-100 text-gold-700">
+            {d.gold.source === 'pasar' ? '● live pasar' : d.gold.source}
+          </span>
+        </div>
+
+        <div className="mt-4 grid grid-cols-2 gap-2">
+          <div className="rounded-2xl bg-white/70 px-3 py-2.5 ring-1 ring-gold-100">
+            <p className="text-[11px] text-ink-400">Estimasi retail (Antam/UBS)</p>
+            <p className="text-sm font-bold text-ink-800">{rupiah(d.gold.retail_per_gram)}/gr</p>
+            <p className="text-[10px] text-ink-400">+{d.gold.premium_pct}% dari pasar</p>
+          </div>
+          <div className="rounded-2xl bg-white/70 px-3 py-2.5 ring-1 ring-gold-100">
+            <p className="text-[11px] text-ink-400">Patokan mahar {d.gold.mahar_target_gram} gram</p>
+            <p className="text-sm font-bold text-gold-700">{rupiah(d.gold.mahar_estimate)}</p>
+            <p className="text-[10px] text-ink-400">untuk anggaran nikah</p>
           </div>
         </div>
-        <ProgressBar value={d.totalGrams} max={maharTargetGram} gradient="from-gold-300 to-gold-500" />
-        <p className="mt-2 text-xs text-slate-400">
-          Cicilan: {num('mahar_cicil_per_bulan_gram')} gram/bulan ·{' '}
-          {maharTargetGram > 0 ? Math.round((d.totalGrams / maharTargetGram) * 100) : 0}% tercapai
+        <p className="mt-3 text-[11px] text-ink-400">
+          Diperbarui otomatis {tanggal(new Date(d.gold.updated_at).toISOString().slice(0, 10))} · patokan
+          pengeluaran, bukan tabungan.
         </p>
       </div>
 

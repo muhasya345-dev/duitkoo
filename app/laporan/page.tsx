@@ -9,7 +9,7 @@ import { api, exportUrl } from '@/lib/api'
 import { bulanTahun, rupiah } from '@/lib/format'
 
 interface Summary {
-  by_category: { category_id: number | null; category_name: string; color?: string | null; total: number; count: number }[]
+  by_category: { category_id: number | null; category_name: string; color?: string | null; icon?: string | null; total: number; count: number }[]
   by_month: { month: string; total: number }[]
   totals: { total_all: number; wedding_total: number; count: number }
 }
@@ -62,9 +62,14 @@ export default function LaporanPage() {
             <CategoryPie data={data.by_category} />
             <div className="mt-3 divide-y divide-slate-50">
               {data.by_category.map((c) => (
-                <div key={c.category_id ?? 'none'} className="flex items-center justify-between py-1.5 text-sm">
+                <div key={c.category_id ?? 'none'} className="flex items-center justify-between py-2 text-sm">
                   <span className="flex items-center gap-2">
-                    <span className="h-3 w-3 rounded-full" style={{ backgroundColor: c.color || '#94a3b8' }} />
+                    <span
+                      className="grid h-7 w-7 place-items-center rounded-lg text-base ring-1 ring-ink-100"
+                      style={{ backgroundColor: `${c.color || '#94a3b8'}1a` }}
+                    >
+                      {c.icon || '📦'}
+                    </span>
                     {c.category_name}
                   </span>
                   <span className="font-semibold">{rupiah(c.total)}</span>

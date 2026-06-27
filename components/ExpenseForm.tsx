@@ -106,7 +106,7 @@ export default function ExpenseForm({
           allowEmpty
           emptyLabel="Tanpa kategori"
           placeholder="Pilih kategori"
-          options={categories.map((c) => ({ value: c.id, label: c.name, color: c.color }))}
+          options={categories.map((c) => ({ value: c.id, label: c.name, color: c.color, emoji: c.icon }))}
         />
       </div>
 

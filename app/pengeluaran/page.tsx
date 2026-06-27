@@ -108,7 +108,7 @@ export default function PengeluaranPage() {
             allowEmpty
             emptyLabel="Semua kategori"
             placeholder="Semua kategori"
-            options={categories.map((c) => ({ value: c.id, label: c.name, color: c.color }))}
+            options={categories.map((c) => ({ value: c.id, label: c.name, color: c.color, emoji: c.icon }))}
           />
           <label
             className={`flex cursor-pointer items-center justify-center gap-2 rounded-2xl text-sm font-semibold transition ${
@@ -149,10 +149,10 @@ export default function PengeluaranPage() {
                 />
               ) : (
                 <div
-                  className="grid h-12 w-12 flex-shrink-0 place-items-center rounded-lg text-xs font-bold text-white"
-                  style={{ backgroundColor: e.category_color || '#94a3b8' }}
+                  className="grid h-12 w-12 flex-shrink-0 place-items-center rounded-2xl text-2xl ring-1 ring-ink-100"
+                  style={{ backgroundColor: `${e.category_color || '#94a3b8'}1a` }}
                 >
-                  {(e.category_name || 'L').slice(0, 2)}
+                  {e.category_icon || '📦'}
                 </div>
               )}
               <div className="min-w-0 flex-1">

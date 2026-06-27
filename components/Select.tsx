@@ -7,6 +7,7 @@ export interface SelectOption {
   value: string | number
   label: string
   color?: string | null
+  emoji?: string | null
   hint?: string
 }
 
@@ -80,8 +81,12 @@ export default function Select({
         }`}
       >
         <span className="flex min-w-0 items-center gap-2">
-          {selected?.color && (
-            <span className="h-2.5 w-2.5 flex-shrink-0 rounded-full" style={{ backgroundColor: selected.color }} />
+          {selected?.emoji ? (
+            <span className="flex-shrink-0 text-base leading-none">{selected.emoji}</span>
+          ) : (
+            selected?.color && (
+              <span className="h-2.5 w-2.5 flex-shrink-0 rounded-full" style={{ backgroundColor: selected.color }} />
+            )
           )}
           <span className={`truncate ${selected ? 'text-ink-900' : 'text-ink-400'}`}>
             {selected ? selected.label : placeholder}
@@ -112,6 +117,7 @@ export default function Select({
               onClick={() => pick(o.value)}
               label={o.label}
               color={o.color}
+              emoji={o.emoji}
               hint={o.hint}
             />
           ))}
@@ -126,12 +132,14 @@ function Item({
   onClick,
   label,
   color,
+  emoji,
   hint,
 }: {
   active: boolean
   onClick: () => void
   label: string
   color?: string | null
+  emoji?: string | null
   hint?: string
 }) {
   return (
@@ -142,8 +150,12 @@ function Item({
         active ? 'bg-brand-50 font-semibold text-brand-700' : 'text-ink-700 hover:bg-ink-50'
       }`}
     >
-      {color !== undefined && color !== null && (
-        <span className="h-2.5 w-2.5 flex-shrink-0 rounded-full" style={{ backgroundColor: color }} />
+      {emoji ? (
+        <span className="grid h-6 w-6 flex-shrink-0 place-items-center rounded-lg text-base leading-none" style={{ backgroundColor: color ? `${color}1a` : undefined }}>
+          {emoji}
+        </span>
+      ) : (
+        color != null && <span className="h-2.5 w-2.5 flex-shrink-0 rounded-full" style={{ backgroundColor: color }} />
       )}
       <span className="min-w-0 flex-1 truncate">{label}</span>
       {hint && <span className="text-[11px] text-ink-400">{hint}</span>}

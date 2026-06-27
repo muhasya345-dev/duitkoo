@@ -56,7 +56,7 @@ expenses.get('/', async (c) => {
   const whereSql = where.length ? `WHERE ${where.join(' AND ')}` : ''
 
   const sql = `
-    SELECT e.*, c.name AS category_name, c.color AS category_color,
+    SELECT e.*, c.name AS category_name, c.color AS category_color, c.icon AS category_icon,
            r.r2_key AS receipt_key
     FROM expenses e
     LEFT JOIN categories c ON c.id = e.category_id
