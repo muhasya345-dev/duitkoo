@@ -24,7 +24,7 @@ export default function PengaturanPage() {
             key={t}
             onClick={() => setTab(t)}
             className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-semibold transition ${
-              tab === t ? 'bg-brand-600 text-white shadow-glow' : 'bg-white text-ink-500 ring-1 ring-ink-100'
+              tab === t ? 'bg-brand-600 text-white shadow-glow' : 'bg-surface text-ink-500 ring-1 ring-ink-100'
             }`}
           >
             {t}
@@ -68,11 +68,12 @@ function useSaver() {
 }
 
 // ── 1. Asumsi Rencana ─────────────────────────────────────────
-const PLAN_FIELDS: { key: string; label: string; type: 'rupiah' | 'text' | 'month' }[] = [
+const PLAN_FIELDS: { key: string; label: string; type: 'rupiah' | 'text' | 'month' | 'date' }[] = [
   { key: 'saldo_awal', label: 'Saldo awal', type: 'rupiah' },
   { key: 'target_min', label: 'Target minimum', type: 'rupiah' },
   { key: 'target_max', label: 'Target maksimum', type: 'rupiah' },
   { key: 'target_periode', label: 'Periode target (teks)', type: 'text' },
+  { key: 'target_date', label: 'Tanggal target nikah (untuk countdown)', type: 'date' },
   { key: 'biaya_hidup_bulanan', label: 'Biaya hidup / bulan', type: 'rupiah' },
   { key: 'proyeksi_mulai', label: 'Proyeksi mulai', type: 'month' },
   { key: 'proyeksi_selesai', label: 'Proyeksi selesai', type: 'month' },
@@ -103,6 +104,13 @@ function PlanSection() {
             />
           ) : f.type === 'month' ? (
             <MonthPicker value={s[f.key] || ''} onChange={(v) => setVal(f.key, v)} />
+          ) : f.type === 'date' ? (
+            <input
+              type="date"
+              className="input"
+              value={s[f.key] || ''}
+              onChange={(e) => setVal(f.key, e.target.value)}
+            />
           ) : (
             <input className="input" value={s[f.key] || ''} onChange={(e) => setVal(f.key, e.target.value)} />
           )}
@@ -208,7 +216,7 @@ function GoldSection() {
   return (
     <div className="space-y-3">
       {/* Harga live */}
-      <div className="card bg-gradient-to-br from-gold-50 to-white">
+      <div className="card bg-gradient-to-br from-gold-50 to-surface dark:from-gold-500/10">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-gold-300 to-gold-500 text-white shadow-glow-gold">
@@ -225,7 +233,7 @@ function GoldSection() {
               await load()
               setRefreshing(false)
             }}
-            className="rounded-xl bg-white p-2.5 text-gold-600 ring-1 ring-gold-100 transition hover:bg-gold-50"
+            className="rounded-xl bg-surface p-2.5 text-gold-600 ring-1 ring-gold-100 transition hover:bg-gold-50"
             title="Perbarui harga"
           >
             <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
@@ -348,6 +356,7 @@ function CategorySection() {
   const [name, setName] = useState('')
   const [emoji, setEmoji] = useState('🛍️')
   const [color, setColor] = useState('#6b7280')
+  const [budget, setBudget] = useState('')
 
   async function load() {
     const r = await api.get<{ categories: Category[] }>('/categories')
@@ -360,13 +369,32 @@ function CategorySection() {
 
   async function add() {
     if (!name.trim()) return
-    await api.post('/categories', { name, color, icon: emoji, type: 'lainnya' })
+    await api.post('/categories', {
+      name,
+      color,
+      icon: emoji,
+      type: 'lainnya',
+      monthly_budget: parseRupiah(budget),
+    })
     setName('')
     setEmoji('🛍️')
+    setBudget('')
     load()
   }
   async function remove(id: number) {
     await api.del(`/categories/${id}`)
+    load()
+  }
+  // Simpan budget bulanan kategori (PUT keseluruhan field).
+  async function saveBudget(c: Category, value: number) {
+    if ((c.monthly_budget || 0) === value) return
+    await api.put(`/categories/${c.id}`, {
+      name: c.name,
+      color: c.color,
+      icon: c.icon,
+      type: c.type,
+      monthly_budget: value,
+    })
     load()
   }
 
@@ -400,22 +428,48 @@ function CategorySection() {
             </button>
           ))}
         </div>
+        <div>
+          <label className="label">Budget bulanan (opsional)</label>
+          <input
+            className="input"
+            inputMode="numeric"
+            placeholder="0 = tanpa batas"
+            value={budget}
+            onChange={(e) => setBudget(ribuan(parseRupiah(e.target.value)))}
+          />
+        </div>
         <button onClick={add} className="btn-primary w-full">
           <Plus className="h-4 w-4" /> Tambah Kategori
         </button>
       </div>
 
-      {/* Daftar */}
-      <div className="card divide-y divide-ink-50">
+      {/* Daftar — atur budget bulanan per kategori */}
+      <p className="px-1 text-xs text-ink-400">
+        Isi budget bulanan untuk dapat peringatan boros di halaman Laporan.
+      </p>
+      <div className="card space-y-1 divide-y divide-ink-50">
         {list.map((c) => (
-          <div key={c.id} className="flex items-center justify-between py-2.5">
-            <span className="flex items-center gap-2.5 text-sm font-medium text-ink-700">
-              <span className="grid h-9 w-9 place-items-center rounded-xl text-lg ring-1 ring-ink-100" style={{ backgroundColor: `${c.color || '#94a3b8'}1a` }}>
-                {c.icon || '📦'}
-              </span>
-              {c.name}
+          <div key={c.id} className="flex items-center gap-2 py-2.5">
+            <span
+              className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-xl text-lg ring-1 ring-ink-100"
+              style={{ backgroundColor: `${c.color || '#94a3b8'}1a` }}
+            >
+              {c.icon || '📦'}
             </span>
-            <button onClick={() => remove(c.id)} className="rounded-xl p-2 text-red-400 hover:bg-red-50">
+            <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink-700">{c.name}</span>
+            <div className="relative w-28 flex-shrink-0">
+              <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-[11px] text-ink-400">
+                Rp
+              </span>
+              <input
+                className="input !py-1.5 !pl-7 text-right text-xs"
+                inputMode="numeric"
+                defaultValue={c.monthly_budget ? ribuan(c.monthly_budget) : ''}
+                placeholder="0"
+                onBlur={(e) => saveBudget(c, parseRupiah(e.target.value))}
+              />
+            </div>
+            <button onClick={() => remove(c.id)} className="flex-shrink-0 rounded-xl p-2 text-red-400 hover:bg-red-50">
               <Trash2 className="h-4 w-4" />
             </button>
           </div>

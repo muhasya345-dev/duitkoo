@@ -6,6 +6,16 @@ export interface Category {
   type: string | null
   color: string | null
   icon: string | null
+  monthly_budget?: number
+}
+
+export interface CategoryBudgetStatus {
+  category_id: number
+  name: string
+  color: string | null
+  icon: string | null
+  budget: number
+  spent: number
 }
 
 export interface Expense {

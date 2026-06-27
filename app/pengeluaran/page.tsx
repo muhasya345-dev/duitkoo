@@ -89,7 +89,7 @@ export default function PengeluaranPage() {
       {/* Filter */}
       <div className="card mt-3 space-y-3">
         <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-slate-400" />
+          <Search className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-ink-400" />
           <input
             className="input pl-9"
             placeholder="Cari deskripsi / catatan…"
@@ -136,7 +136,7 @@ export default function PengeluaranPage() {
       {loading ? (
         <PageLoader />
       ) : expenses.length === 0 ? (
-        <p className="py-16 text-center text-sm text-slate-400">Belum ada pengeluaran.</p>
+        <p className="py-16 text-center text-sm text-ink-400">Belum ada pengeluaran.</p>
       ) : (
         <div className="stagger mt-3 space-y-2">
           {expenses.map((e) => (
@@ -145,7 +145,7 @@ export default function PengeluaranPage() {
                 <img
                   src={`/api/receipts/${e.receipt_id}/image`}
                   alt="struk"
-                  className="h-12 w-12 flex-shrink-0 rounded-lg object-cover ring-1 ring-slate-100"
+                  className="h-12 w-12 flex-shrink-0 rounded-lg object-cover ring-1 ring-ink-100"
                 />
               ) : (
                 <div
@@ -157,21 +157,21 @@ export default function PengeluaranPage() {
               )}
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
-                  <p className="truncate text-sm font-semibold text-slate-700">
+                  <p className="truncate text-sm font-semibold text-ink-700">
                     {e.description || e.category_name || 'Pengeluaran'}
                   </p>
                   {!!e.is_wedding && (
                     <span className="badge bg-gold-100 text-gold-700">nikah</span>
                   )}
                 </div>
-                <p className="text-[11px] text-slate-400">
+                <p className="text-[11px] text-ink-400">
                   {tanggal(e.date)} · {e.category_name || 'Tanpa kategori'} · {e.payment_method || '—'}
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-sm font-bold text-slate-800">{rupiah(e.amount)}</p>
+                <p className="text-sm font-bold text-ink-800">{rupiah(e.amount)}</p>
                 <div className="mt-1 flex justify-end gap-1">
-                  <button onClick={() => openEdit(e)} className="rounded-md p-1 text-slate-400 hover:bg-slate-100">
+                  <button onClick={() => openEdit(e)} className="rounded-md p-1 text-ink-400 hover:bg-ink-100">
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
                   <button onClick={() => setDeleteId(e.id)} className="rounded-md p-1 text-red-400 hover:bg-red-50">

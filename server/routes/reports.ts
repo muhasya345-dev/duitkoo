@@ -11,6 +11,23 @@ reports.get('/projection', async (c) => {
   return c.json({ projection, saldo_awal: saldoAwal, start, end, proyeksi_akhir: final })
 })
 
+/** GET /api/reports/category-budget?month=YYYY-MM — status budget bulanan per kategori. */
+reports.get('/category-budget', async (c) => {
+  const url = new URL(c.req.url)
+  const month = url.searchParams.get('month') || new Date().toISOString().slice(0, 7)
+  const { results } = await c.env.DB.prepare(
+    `SELECT c.id AS category_id, c.name, c.color, c.icon, c.monthly_budget AS budget,
+            COALESCE((SELECT SUM(e.amount) FROM expenses e
+                      WHERE e.category_id = c.id AND substr(e.date,1,7) = ?), 0) AS spent
+     FROM categories c
+     WHERE c.monthly_budget > 0
+     ORDER BY c.id`,
+  )
+    .bind(month)
+    .all()
+  return c.json({ month, categories: results })
+})
+
 /** GET /api/reports/summary — rekap per kategori & per bulan (opsional from/to). */
 reports.get('/summary', async (c) => {
   const url = new URL(c.req.url)

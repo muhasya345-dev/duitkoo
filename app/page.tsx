@@ -1,7 +1,17 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { Coins, LineChart, Plus, Target, TrendingDown, TrendingUp, Trash2, Wallet } from 'lucide-react'
+import {
+  CalendarClock,
+  Coins,
+  LineChart,
+  Plus,
+  Target,
+  TrendingDown,
+  TrendingUp,
+  Trash2,
+  Wallet,
+} from 'lucide-react'
 import AppShell from '@/components/AppShell'
 import { ProjectionChart } from '@/components/Charts'
 import Modal from '@/components/Modal'
@@ -26,6 +36,31 @@ interface DashData {
   weddingSpent: number
   income: IncomeSource[]
   savings: SavingsEntry[]
+}
+
+// Hitung sisa waktu ke tanggal target (tahun/bulan/hari).
+function computeCountdown(dateStr: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return null
+  const target = new Date(dateStr + 'T00:00:00')
+  const now = new Date()
+  now.setHours(0, 0, 0, 0)
+  if (target <= now) return { totalMonths: 0, text: 'sudah tiba', past: true }
+  let y = target.getFullYear() - now.getFullYear()
+  let m = target.getMonth() - now.getMonth()
+  let dd = target.getDate() - now.getDate()
+  if (dd < 0) {
+    m--
+    dd += new Date(target.getFullYear(), target.getMonth(), 0).getDate()
+  }
+  if (m < 0) {
+    y--
+    m += 12
+  }
+  const parts: string[] = []
+  if (y > 0) parts.push(`${y} tahun`)
+  parts.push(`${m} bulan`)
+  if (dd > 0) parts.push(`${dd} hari`)
+  return { totalMonths: y * 12 + m, text: parts.join(' '), past: false }
 }
 
 export default function DashboardPage() {
@@ -99,6 +134,13 @@ function Dashboard({ d, reload }: { d: DashData; reload: () => Promise<void> }) 
   const pctTarget = targetMin > 0 ? Math.round((actualBalance / targetMin) * 100) : 0
   const kurang = Math.max(0, targetMin - actualBalance)
 
+  // ── Countdown nikah + wajib nabung/bulan ───────────────────
+  const countdown = computeCountdown(s['target_date'] || '')
+  const currentForReq = actualBalance || saldoAwal
+  const monthsLeft = Math.max(1, countdown?.totalMonths ?? 1)
+  const requiredPerMonth = Math.max(0, Math.ceil((targetMin - currentForReq) / monthsLeft))
+  const avgNet = d.projection.length ? Math.round((d.proyeksiAkhir - saldoAwal) / d.projection.length) : 0
+
   // ── Anggaran pernikahan ────────────────────────────────────
   const totalEstimasi = d.budget.reduce((a, b) => a + (b.estimated || 0), 0)
   const totalRealisasi = d.budget.reduce((a, b) => a + (b.actual || 0), 0)
@@ -126,6 +168,33 @@ function Dashboard({ d, reload }: { d: DashData; reload: () => Promise<void> }) 
           </div>
         </div>
       </div>
+
+      {/* Countdown nikah */}
+      {countdown && !countdown.past && (
+        <div className="card bg-gradient-to-br from-gold-400 to-gold-600 text-white ring-0">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-white/90">
+              <CalendarClock className="h-4 w-4" />
+              <span className="text-sm font-medium">Hitung Mundur Nikah</span>
+            </div>
+            <span className="text-xs text-white/70">{tanggal(s['target_date'])}</span>
+          </div>
+          <p className="mt-2 text-2xl font-extrabold">{countdown.text} lagi</p>
+          <div className="mt-3 rounded-2xl bg-white/15 px-3.5 py-2.5">
+            <p className="text-xs text-white/80">
+              Agar capai target {rupiah(targetMin)}, sisihkan minimal
+            </p>
+            <p className="text-xl font-extrabold">
+              {rupiah(requiredPerMonth)} <span className="text-sm font-medium text-white/80">/bulan</span>
+            </p>
+            <p className="mt-0.5 text-[11px] text-white/80">
+              {requiredPerMonth <= avgNet
+                ? '✓ masih dalam kapasitas proyeksimu'
+                : `perlu ~${rupiah(requiredPerMonth - avgNet)}/bln di atas proyeksi`}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Progres NYATA */}
       <SectionTitle
@@ -241,7 +310,7 @@ function Dashboard({ d, reload }: { d: DashData; reload: () => Promise<void> }) 
 
       {/* Patokan harga emas */}
       <SectionTitle>Patokan Harga Emas</SectionTitle>
-      <div className="card overflow-hidden bg-gradient-to-br from-gold-50 to-white">
+      <div className="card overflow-hidden bg-gradient-to-br from-gold-50 to-surface dark:from-gold-500/10">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-gold-300 to-gold-500 text-white shadow-glow-gold">
@@ -259,12 +328,12 @@ function Dashboard({ d, reload }: { d: DashData; reload: () => Promise<void> }) 
           </span>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-2">
-          <div className="rounded-2xl bg-white/70 px-3 py-2.5 ring-1 ring-gold-100">
+          <div className="rounded-2xl bg-surface/70 px-3 py-2.5 ring-1 ring-gold-100">
             <p className="text-[11px] text-ink-400">Estimasi retail (Antam/UBS)</p>
             <p className="text-sm font-bold text-ink-800">{rupiah(d.gold.retail_per_gram)}/gr</p>
             <p className="text-[10px] text-ink-400">+{d.gold.premium_pct}% dari pasar</p>
           </div>
-          <div className="rounded-2xl bg-white/70 px-3 py-2.5 ring-1 ring-gold-100">
+          <div className="rounded-2xl bg-surface/70 px-3 py-2.5 ring-1 ring-gold-100">
             <p className="text-[11px] text-ink-400">Patokan mahar {d.gold.mahar_target_gram} gram</p>
             <p className="text-sm font-bold text-gold-700">{rupiah(d.gold.mahar_estimate)}</p>
             <p className="text-[10px] text-ink-400">untuk anggaran nikah</p>

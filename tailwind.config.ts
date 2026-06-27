@@ -1,6 +1,7 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
+  darkMode: 'class',
   content: [
     './app/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
@@ -9,6 +10,9 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Token tema (didefinisikan via CSS var, otomatis flip di dark mode)
+        canvas: 'rgb(var(--canvas) / <alpha-value>)',
+        surface: 'rgb(var(--surface) / <alpha-value>)',
         // Primary — emerald/teal yang "kalem mahal"
         brand: {
           50: '#ecfdf5',
@@ -34,18 +38,19 @@ const config: Config = {
           600: '#d97706',
           700: '#b45309',
         },
+        // Skala netral via CSS var → flip otomatis saat dark mode.
         ink: {
-          50: '#f6f7f9',
-          100: '#eceef2',
-          200: '#d5dae2',
-          300: '#b1bac8',
-          400: '#8693a8',
-          500: '#67748c',
-          600: '#515c72',
-          700: '#434b5d',
-          800: '#3a404e',
-          900: '#1f242e',
-          950: '#12151c',
+          50: 'rgb(var(--ink-50) / <alpha-value>)',
+          100: 'rgb(var(--ink-100) / <alpha-value>)',
+          200: 'rgb(var(--ink-200) / <alpha-value>)',
+          300: 'rgb(var(--ink-300) / <alpha-value>)',
+          400: 'rgb(var(--ink-400) / <alpha-value>)',
+          500: 'rgb(var(--ink-500) / <alpha-value>)',
+          600: 'rgb(var(--ink-600) / <alpha-value>)',
+          700: 'rgb(var(--ink-700) / <alpha-value>)',
+          800: 'rgb(var(--ink-800) / <alpha-value>)',
+          900: 'rgb(var(--ink-900) / <alpha-value>)',
+          950: 'rgb(var(--ink-950) / <alpha-value>)',
         },
       },
       fontFamily: {

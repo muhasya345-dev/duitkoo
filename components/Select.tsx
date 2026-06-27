@@ -76,7 +76,7 @@ export default function Select({
         ref={btnRef}
         type="button"
         onClick={toggle}
-        className={`flex w-full items-center justify-between gap-2 rounded-2xl border bg-white px-3.5 py-2.5 text-left text-sm transition ${
+        className={`flex w-full items-center justify-between gap-2 rounded-2xl border bg-surface px-3.5 py-2.5 text-left text-sm transition ${
           open ? 'border-brand-400 ring-4 ring-brand-100' : 'border-ink-200 hover:border-ink-300'
         }`}
       >
@@ -99,7 +99,7 @@ export default function Select({
 
       {open && (
         <div
-          className={`absolute z-50 max-h-64 w-full overflow-y-auto rounded-2xl border border-ink-100 bg-white p-1.5 shadow-card animate-pop-in ${
+          className={`absolute z-50 max-h-64 w-full overflow-y-auto rounded-2xl border border-ink-100 bg-surface p-1.5 shadow-card animate-pop-in ${
             drop === 'up' ? 'bottom-full mb-2' : 'top-full mt-2'
           }`}
         >

@@ -89,7 +89,7 @@ export default function ScanPage() {
   return (
     <AppShell>
       <h1 className="text-xl font-extrabold">Scan Struk</h1>
-      <p className="mt-1 text-sm text-slate-400">
+      <p className="mt-1 text-sm text-ink-400">
         Foto/unggah struk — teksnya dibaca <b>gratis langsung di HP-mu</b> (tanpa biaya), lalu kamu konfirmasi.
       </p>
 
@@ -129,21 +129,21 @@ export default function ScanPage() {
 
       {/* PROCESSING */}
       {phase === 'processing' && (
-        <div className="mt-5 flex flex-col items-center gap-4 rounded-2xl bg-white py-12 shadow-sm ring-1 ring-slate-100">
+        <div className="mt-5 flex flex-col items-center gap-4 rounded-2xl bg-surface py-12 shadow-sm ring-1 ring-ink-100">
           {previewUrl && (
-            <img src={previewUrl} alt="struk" className="h-32 w-32 rounded-xl object-cover ring-1 ring-slate-100" />
+            <img src={previewUrl} alt="struk" className="h-32 w-32 rounded-xl object-cover ring-1 ring-ink-100" />
           )}
           <Loader2 className="h-7 w-7 animate-spin text-brand-600" />
-          <p className="text-sm font-medium text-slate-600">{stage}</p>
+          <p className="text-sm font-medium text-ink-600">{stage}</p>
           {progress > 0 && (
             <div className="w-48">
-              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-ink-100">
                 <div className="h-full rounded-full bg-brand-500 transition-all" style={{ width: `${progress}%` }} />
               </div>
-              <p className="mt-1 text-center text-xs text-slate-400">{progress}%</p>
+              <p className="mt-1 text-center text-xs text-ink-400">{progress}%</p>
             </div>
           )}
-          <p className="px-6 text-center text-[11px] text-slate-400">
+          <p className="px-6 text-center text-[11px] text-ink-400">
             Pertama kali butuh beberapa detik untuk mengunduh mesin OCR. Selanjutnya lebih cepat.
           </p>
         </div>
@@ -152,9 +152,9 @@ export default function ScanPage() {
       {/* REVIEW */}
       {phase === 'review' && extraction && receiptId && (
         <div className="mt-5 space-y-4">
-          <div className="grid grid-cols-[auto_1fr] gap-3 rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-100">
+          <div className="grid grid-cols-[auto_1fr] gap-3 rounded-2xl bg-surface p-3 shadow-sm ring-1 ring-ink-100">
             {previewUrl && (
-              <img src={previewUrl} alt="struk" className="h-28 w-28 rounded-xl object-cover ring-1 ring-slate-100" />
+              <img src={previewUrl} alt="struk" className="h-28 w-28 rounded-xl object-cover ring-1 ring-ink-100" />
             )}
             <div className="text-sm">
               <p className="flex items-center gap-1 text-xs font-semibold text-brand-600">
@@ -163,8 +163,8 @@ export default function ScanPage() {
               {extraction.total || extraction.merchant ? (
                 <>
                   <p className="mt-1 font-semibold">{extraction.merchant || 'Merchant tidak terbaca'}</p>
-                  <p className="text-slate-500">{extraction.date || 'Tanggal tidak terbaca'}</p>
-                  <p className="mt-1 text-lg font-extrabold text-slate-800">{rupiah(extraction.total || 0)}</p>
+                  <p className="text-ink-500">{extraction.date || 'Tanggal tidak terbaca'}</p>
+                  <p className="mt-1 text-lg font-extrabold text-ink-800">{rupiah(extraction.total || 0)}</p>
                 </>
               ) : (
                 <p className="text-gold-600">
@@ -175,7 +175,7 @@ export default function ScanPage() {
           </div>
 
           <div className="card">
-            <p className="mb-3 text-sm font-bold text-slate-700">Konfirmasi & Simpan</p>
+            <p className="mb-3 text-sm font-bold text-ink-700">Konfirmasi & Simpan</p>
             <ExpenseForm
               categories={categories}
               submitLabel="Simpan Pengeluaran"
@@ -195,9 +195,9 @@ export default function ScanPage() {
 
       {/* DONE */}
       {phase === 'done' && (
-        <div className="mt-5 flex flex-col items-center gap-3 rounded-2xl bg-white py-16 shadow-sm ring-1 ring-slate-100">
+        <div className="mt-5 flex flex-col items-center gap-3 rounded-2xl bg-surface py-16 shadow-sm ring-1 ring-ink-100">
           <CheckCircle2 className="h-12 w-12 text-brand-500" />
-          <p className="font-semibold text-slate-700">Pengeluaran tersimpan!</p>
+          <p className="font-semibold text-ink-700">Pengeluaran tersimpan!</p>
           <button className="btn-primary mt-2" onClick={reset}>
             <ScanLine className="h-4 w-4" /> Scan Lagi
           </button>

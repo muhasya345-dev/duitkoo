@@ -13,6 +13,7 @@ import {
   Wallet,
 } from 'lucide-react'
 import { api } from '@/lib/api'
+import ThemeToggle from '@/components/ThemeToggle'
 
 const NAV = [
   { href: '/', label: 'Rencana', icon: LayoutDashboard },
@@ -81,7 +82,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen">
       {/* ===== Sidebar (desktop) ===== */}
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-ink-100 bg-white/70 px-4 py-6 backdrop-blur-xl lg:flex">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-ink-100 bg-surface/70 px-4 py-6 backdrop-blur-xl lg:flex">
         <div className="px-2">
           <Logo />
         </div>
@@ -114,7 +115,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               <p className="truncate text-xs font-semibold text-ink-700">{firstName}</p>
               <p className="text-[10px] text-ink-400">Akun pribadi</p>
             </div>
-            <button onClick={logout} className="rounded-xl p-2 text-ink-400 transition hover:bg-white hover:text-red-500" title="Keluar">
+            <ThemeToggle className="!bg-transparent !p-2" />
+            <button onClick={logout} className="rounded-xl p-2 text-ink-400 transition hover:bg-surface hover:text-red-500" title="Keluar">
               <LogOut className="h-4 w-4" />
             </button>
           </div>
@@ -122,11 +124,14 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* ===== Header (mobile) ===== */}
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-ink-100 bg-white/80 px-4 py-3 backdrop-blur-xl lg:hidden">
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-ink-100 bg-surface/80 px-4 py-3 backdrop-blur-xl lg:hidden">
         <Logo small />
-        <button onClick={logout} className="rounded-xl bg-ink-100 p-2.5 text-ink-500 transition active:scale-95" title="Keluar">
-          <LogOut className="h-4 w-4" />
-        </button>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <button onClick={logout} className="rounded-xl bg-ink-100 p-2.5 text-ink-500 transition active:scale-95" title="Keluar">
+            <LogOut className="h-4 w-4" />
+          </button>
+        </div>
       </header>
 
       {/* ===== Konten ===== */}
@@ -135,7 +140,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* ===== Bottom nav (mobile) ===== */}
-      <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-ink-100 bg-white/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl lg:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-ink-100 bg-surface/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl lg:hidden">
         <div className="mx-auto grid max-w-3xl grid-cols-5">
           {NAV.map((item) => {
             const active = isActive(item.href)

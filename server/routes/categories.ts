@@ -14,22 +14,35 @@ categories.post('/', async (c) => {
   const b = await c.req.json().catch(() => ({}))
   if (!b?.name) return c.json({ error: 'Nama kategori wajib' }, 400)
   const res = await c.env.DB.prepare(
-    'INSERT INTO categories (name, type, color, icon) VALUES (?, ?, ?, ?)',
+    'INSERT INTO categories (name, type, color, icon, monthly_budget) VALUES (?, ?, ?, ?, ?)',
   )
-    .bind(String(b.name), b.type ? String(b.type) : null, b.color ? String(b.color) : null, b.icon ? String(b.icon) : null)
+    .bind(
+      String(b.name),
+      b.type ? String(b.type) : null,
+      b.color ? String(b.color) : null,
+      b.icon ? String(b.icon) : null,
+      Math.round(Number(b.monthly_budget)) || 0,
+    )
     .run()
   return c.json({ ok: true, id: res.meta.last_row_id }, 201)
 })
 
-/** PUT /api/categories/:id — ubah kategori. */
+/** PUT /api/categories/:id — ubah kategori (termasuk budget bulanan). */
 categories.put('/:id', async (c) => {
   const id = Number(c.req.param('id'))
   const b = await c.req.json().catch(() => ({}))
   if (!b?.name) return c.json({ error: 'Nama kategori wajib' }, 400)
   const res = await c.env.DB.prepare(
-    'UPDATE categories SET name=?, type=?, color=?, icon=? WHERE id=?',
+    'UPDATE categories SET name=?, type=?, color=?, icon=?, monthly_budget=? WHERE id=?',
   )
-    .bind(String(b.name), b.type ? String(b.type) : null, b.color ? String(b.color) : null, b.icon ? String(b.icon) : null, id)
+    .bind(
+      String(b.name),
+      b.type ? String(b.type) : null,
+      b.color ? String(b.color) : null,
+      b.icon ? String(b.icon) : null,
+      Math.round(Number(b.monthly_budget)) || 0,
+      id,
+    )
     .run()
   if (res.meta.changes === 0) return c.json({ error: 'Tidak ditemukan' }, 404)
   return c.json({ ok: true })
