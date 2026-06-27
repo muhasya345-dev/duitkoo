@@ -19,15 +19,13 @@ income.put('/', async (c) => {
   for (const item of list) {
     const amount = Math.round(Number(item?.amount))
     if (!item?.name || !Number.isFinite(amount)) continue
+    const freq = item.frequency ? String(item.frequency) : 'bulanan'
+    // bulanan selalu 'tiap bulan'; periodik/tahunan simpan bulan terpilih apa adanya.
+    const pattern = freq === 'bulanan' ? 'tiap bulan' : item.month_pattern ? String(item.month_pattern) : ''
     stmts.push(
       c.env.DB.prepare(
         `INSERT INTO income_sources (name, amount, frequency, month_pattern) VALUES (?, ?, ?, ?)`,
-      ).bind(
-        String(item.name),
-        amount,
-        item.frequency ? String(item.frequency) : 'bulanan',
-        item.month_pattern ? String(item.month_pattern) : 'tiap bulan',
-      ),
+      ).bind(String(item.name), amount, freq, pattern),
     )
   }
   await c.env.DB.batch(stmts)

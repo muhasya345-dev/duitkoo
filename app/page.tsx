@@ -17,7 +17,7 @@ import { ProjectionChart } from '@/components/Charts'
 import Modal from '@/components/Modal'
 import { PageLoader, ProgressBar, SectionTitle, Stat } from '@/components/ui'
 import { api } from '@/lib/api'
-import { parseRupiah, ribuan, rupiah, tanggal, todayISO } from '@/lib/format'
+import { bulanTahun, parseRupiah, ribuan, rupiah, tanggal, todayISO } from '@/lib/format'
 import type {
   BudgetItem,
   ChartPoint,
@@ -103,6 +103,13 @@ function Dashboard({ d, reload }: { d: DashData; reload: () => Promise<void> }) 
   const targetMax = num('target_max')
   const saldoAwal = num('saldo_awal')
 
+  // Label periode target diturunkan dari tanggal nikah (fallback: proyeksi selesai).
+  const periodLabel = /^\d{4}-\d{2}-\d{2}$/.test(s['target_date'] || '')
+    ? bulanTahun(s['target_date'].slice(0, 7))
+    : s['proyeksi_selesai']
+      ? bulanTahun(s['proyeksi_selesai'])
+      : '—'
+
   // ── Progres nyata ──────────────────────────────────────────
   const snaps = [...d.savings].sort((a, b) => a.date.localeCompare(b.date))
   const latest = snaps.length ? snaps[snaps.length - 1] : null
@@ -151,7 +158,7 @@ function Dashboard({ d, reload }: { d: DashData; reload: () => Promise<void> }) 
       <div className="card bg-gradient-to-br from-brand-600 to-brand-700 text-white ring-0">
         <div className="flex items-center gap-2 text-white/80">
           <Target className="h-4 w-4" />
-          <span className="text-sm font-medium">Target Dana Nikah · {s['target_periode'] || '—'}</span>
+          <span className="text-sm font-medium">Target Dana Nikah · {periodLabel}</span>
         </div>
         <p className="mt-2 text-3xl font-extrabold">{rupiah(targetMin)}</p>
         <p className="text-sm text-white/70">s/d {rupiah(targetMax)}</p>

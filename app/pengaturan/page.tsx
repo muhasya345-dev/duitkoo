@@ -72,8 +72,7 @@ const PLAN_FIELDS: { key: string; label: string; type: 'rupiah' | 'text' | 'mont
   { key: 'saldo_awal', label: 'Saldo awal', type: 'rupiah' },
   { key: 'target_min', label: 'Target minimum', type: 'rupiah' },
   { key: 'target_max', label: 'Target maksimum', type: 'rupiah' },
-  { key: 'target_periode', label: 'Periode target (teks)', type: 'text' },
-  { key: 'target_date', label: 'Tanggal target nikah (untuk countdown)', type: 'date' },
+  { key: 'target_date', label: 'Tanggal target nikah', type: 'date' },
   { key: 'biaya_hidup_bulanan', label: 'Biaya hidup / bulan', type: 'rupiah' },
   { key: 'proyeksi_mulai', label: 'Proyeksi mulai', type: 'month' },
   { key: 'proyeksi_selesai', label: 'Proyeksi selesai', type: 'month' },
@@ -121,6 +120,44 @@ function PlanSection() {
   )
 }
 
+// Pemilih bulan (multi) untuk penghasilan periodik/tahunan.
+const MONTHS_ABBR = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des']
+function MonthMultiSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const selected = new Set(
+    (value || '')
+      .split(/[,/]/)
+      .map((x) => x.trim().toLowerCase().slice(0, 3))
+      .filter(Boolean),
+  )
+  function toggle(m: string) {
+    const key = m.toLowerCase().slice(0, 3)
+    const next = new Set(selected)
+    if (next.has(key)) next.delete(key)
+    else next.add(key)
+    // susun ulang dalam urutan kalender
+    onChange(MONTHS_ABBR.filter((x) => next.has(x.toLowerCase().slice(0, 3))).join(','))
+  }
+  return (
+    <div className="grid grid-cols-6 gap-1.5">
+      {MONTHS_ABBR.map((m) => {
+        const on = selected.has(m.toLowerCase().slice(0, 3))
+        return (
+          <button
+            key={m}
+            type="button"
+            onClick={() => toggle(m)}
+            className={`rounded-lg py-1.5 text-xs font-semibold transition ${
+              on ? 'bg-brand-600 text-white shadow-glow' : 'bg-ink-100 text-ink-500 hover:bg-ink-200'
+            }`}
+          >
+            {m}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
 // ── 2. Penghasilan ────────────────────────────────────────────
 function IncomeSection() {
   const [list, setList] = useState<IncomeSource[] | null>(null)
@@ -159,23 +196,33 @@ function IncomeSection() {
             value={ribuan(it.amount)}
             onChange={(e) => update(i, { amount: parseRupiah(e.target.value) })}
           />
-          <div className="grid grid-cols-2 gap-2">
-            <Select
-              value={it.frequency}
-              onChange={(v) => update(i, { frequency: String(v) })}
-              options={[
-                { value: 'bulanan', label: 'Bulanan' },
-                { value: 'periodik', label: 'Periodik' },
-                { value: 'tahunan', label: 'Tahunan' },
-              ]}
-            />
-            <input
-              className="input"
-              placeholder="tiap bulan / Jul / Des,Jun"
-              value={it.month_pattern}
-              onChange={(e) => update(i, { month_pattern: e.target.value })}
-            />
-          </div>
+          <Select
+            value={it.frequency}
+            onChange={(v) => {
+              const f = String(v)
+              // bulanan = otomatis tiap bulan; lainnya = pilih bulan (mulai kosong).
+              update(i, {
+                frequency: f,
+                month_pattern:
+                  f === 'bulanan' ? 'tiap bulan' : it.month_pattern === 'tiap bulan' ? '' : it.month_pattern,
+              })
+            }}
+            options={[
+              { value: 'bulanan', label: 'Bulanan' },
+              { value: 'periodik', label: 'Periodik' },
+              { value: 'tahunan', label: 'Tahunan' },
+            ]}
+          />
+          {it.frequency === 'bulanan' ? (
+            <p className="rounded-2xl bg-ink-50 px-3 py-2 text-xs text-ink-400">
+              Otomatis dihitung <b className="text-ink-600">tiap bulan</b>.
+            </p>
+          ) : (
+            <div>
+              <label className="label">Bulan diterima (pilih satu/lebih)</label>
+              <MonthMultiSelect value={it.month_pattern} onChange={(v) => update(i, { month_pattern: v })} />
+            </div>
+          )}
         </div>
       ))}
       <button onClick={add} className="btn-secondary w-full">
