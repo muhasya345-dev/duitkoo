@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Check, Coins, Loader2, Plus, RefreshCw, Trash2 } from 'lucide-react'
 import AppShell from '@/components/AppShell'
 import Select from '@/components/Select'
+import MonthPicker from '@/components/MonthPicker'
 import { PageLoader } from '@/components/ui'
 import { api } from '@/lib/api'
 import { parseRupiah, ribuan, rupiah, tanggal } from '@/lib/format'
@@ -101,12 +102,7 @@ function PlanSection() {
               onChange={(e) => setVal(f.key, String(parseRupiah(e.target.value)))}
             />
           ) : f.type === 'month' ? (
-            <input
-              type="month"
-              className="input"
-              value={s[f.key] || ''}
-              onChange={(e) => setVal(f.key, e.target.value)}
-            />
+            <MonthPicker value={s[f.key] || ''} onChange={(v) => setVal(f.key, v)} />
           ) : (
             <input className="input" value={s[f.key] || ''} onChange={(e) => setVal(f.key, e.target.value)} />
           )}
