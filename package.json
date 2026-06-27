@@ -1,0 +1,37 @@
+{
+  "name": "duitkoo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Financial Management pribadi — rencana dana nikah & pencatatan pengeluaran (Cloudflare Pages + D1 + R2 + Workers AI)",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "pages:dev": "wrangler pages dev",
+    "hash-password": "node scripts/hash-password.mjs",
+    "d1:apply:local": "wrangler d1 migrations apply duitkoo-db --local",
+    "d1:apply": "wrangler d1 migrations apply duitkoo-db --remote"
+  },
+  "dependencies": {
+    "hono": "^4.6.3",
+    "lucide-react": "^0.451.0",
+    "next": "14.2.35",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "recharts": "^2.12.7",
+    "tesseract.js": "^5.1.1",
+    "xlsx-js-style": "^1.2.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240925.0",
+    "@types/node": "^22.7.4",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13",
+    "typescript": "^5.6.2",
+    "wrangler": "^3.80.0"
+  }
+}

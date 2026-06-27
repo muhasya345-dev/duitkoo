@@ -1,0 +1,9 @@
+# Salin file ini menjadi `.dev.vars` untuk pengembangan lokal (wrangler pages dev).
+# JANGAN commit `.dev.vars` (sudah masuk .gitignore).
+#
+# ADMIN_PASSWORD_HASH dibuat dengan: npm run hash-password -- "<password>"
+# Secara default password = NIP. Ganti kapan saja tanpa ubah kode.
+
+ADMIN_NIP="199911222025051007"
+ADMIN_PASSWORD_HASH="pbkdf2$100000$GANTI_SALT$GANTI_HASH"
+SESSION_SECRET="ganti-dengan-string-acak-panjang-untuk-menandatangani-jwt"

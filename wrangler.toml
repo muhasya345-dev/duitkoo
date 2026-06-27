@@ -1,0 +1,33 @@
+# Konfigurasi Cloudflare Pages (proyek SAMA untuk frontend + Pages Functions).
+# Binding di bawah ini dipakai oleh Pages Functions di functions/api/[[route]].ts
+# dan diakses lewat Hono `c.env.DB`, `c.env.BUCKET`.
+#
+# Catatan: untuk Pages, `name` = nama proyek Pages. `pages_build_output_dir`
+# menunjuk ke hasil `next build` (static export) yaitu folder `out`.
+
+name = "duitkoo"
+account_id = "618e43a561438aab425d674a18b0cf1d"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "out"
+
+# --- Cloudflare D1 (SQLite) ---
+[[d1_databases]]
+binding = "DB"
+database_name = "duitkoo-db"
+database_id = "069b886d-3e61-4498-804b-8f7390431580"
+migrations_dir = "migrations"
+
+# --- Cloudflare R2 (penyimpanan gambar struk) ---
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "duitkoo-receipts"
+
+# Catatan: OCR struk dilakukan GRATIS di sisi browser memakai Tesseract.js
+# (lihat app/pengeluaran/scan/page.tsx). Tidak ada binding Workers AI / API
+# berbayar sehingga tidak ada biaya per-scan.
+#
+# Secret produksi diset via:
+#   npx wrangler pages secret put ADMIN_NIP
+#   npx wrangler pages secret put ADMIN_PASSWORD_HASH
+#   npx wrangler pages secret put SESSION_SECRET
