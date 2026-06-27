@@ -6,7 +6,6 @@
 # menunjuk ke hasil `next build` (static export) yaitu folder `out`.
 
 name = "duitkoo"
-account_id = "618e43a561438aab425d674a18b0cf1d"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = "out"
