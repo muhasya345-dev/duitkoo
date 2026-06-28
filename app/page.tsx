@@ -253,29 +253,38 @@ function Dashboard({ d, reload }: { d: DashData; reload: () => Promise<void> }) 
             </div>
           </div>
 
-          {/* Riwayat ringkas */}
-          {snaps.length > 1 && (
-            <div className="mt-3 divide-y divide-ink-50 border-t border-ink-50 pt-1">
-              {[...snaps]
-                .reverse()
-                .slice(0, 4)
-                .map((sp) => (
-                  <div key={sp.id} className="flex items-center justify-between py-1.5 text-xs">
-                    <span className="text-ink-500">{tanggal(sp.date)}</span>
-                    <span className="flex items-center gap-2">
-                      <span className="font-semibold text-ink-700">{rupiah(sp.amount)}</span>
-                      <button
-                        onClick={async () => {
-                          await api.del(`/savings/${sp.id}`)
-                          reload()
-                        }}
-                        className="rounded-md p-1 text-red-400 hover:bg-red-50"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </button>
-                    </span>
-                  </div>
-                ))}
+          {/* Riwayat catatan saldo (+ hapus) */}
+          {snaps.length > 0 && (
+            <div className="mt-3 border-t border-ink-50 pt-2">
+              <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-ink-400">
+                Riwayat catatan
+              </p>
+              <div className="divide-y divide-ink-50">
+                {[...snaps]
+                  .reverse()
+                  .slice(0, 6)
+                  .map((sp) => (
+                    <div key={sp.id} className="flex items-center justify-between py-1.5 text-xs">
+                      <span className="text-ink-500">
+                        {tanggal(sp.date)}
+                        {sp.note ? <span className="text-ink-400"> · {sp.note}</span> : null}
+                      </span>
+                      <span className="flex items-center gap-2">
+                        <span className="font-semibold text-ink-700">{rupiah(sp.amount)}</span>
+                        <button
+                          onClick={async () => {
+                            await api.del(`/savings/${sp.id}`)
+                            reload()
+                          }}
+                          className="rounded-md p-1 text-red-400 hover:bg-red-50"
+                          title="Hapus catatan ini"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </span>
+                    </div>
+                  ))}
+              </div>
             </div>
           )}
         </div>
